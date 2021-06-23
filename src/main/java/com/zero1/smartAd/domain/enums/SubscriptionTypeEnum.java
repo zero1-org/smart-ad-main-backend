@@ -1,4 +1,4 @@
-package com.zero1.smartAdd.domain.enums;
+package com.zero1.smartAd.domain.enums;
 
 import lombok.Getter;
 

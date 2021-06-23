@@ -1,4 +1,4 @@
-package com.zero1.smartAdd.domain;
+package com.zero1.smartAd.domain;
 
 import lombok.Builder;
 import lombok.Data;

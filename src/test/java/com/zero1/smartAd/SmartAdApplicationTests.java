@@ -1,10 +1,10 @@
-package com.zero1.smartAdd;
+package com.zero1.smartAd;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SmartAddApplicationTests {
+class SmartAdApplicationTests {
 
 	@Test
 	void contextLoads() {

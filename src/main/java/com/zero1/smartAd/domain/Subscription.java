@@ -1,6 +1,6 @@
-package com.zero1.smartAdd.domain;
+package com.zero1.smartAd.domain;
 
-import com.zero1.smartAdd.domain.enums.SubscriptionTypeEnum;
+import com.zero1.smartAd.domain.enums.SubscriptionTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 

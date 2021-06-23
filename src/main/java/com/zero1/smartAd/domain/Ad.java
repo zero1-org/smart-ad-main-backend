@@ -1,4 +1,4 @@
-package com.zero1.smartAdd.domain;
+package com.zero1.smartAd.domain;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,8 +7,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class User {
+public class Ad {
     private UUID id = UUID.randomUUID();
-    private String fullName;
-    private String email;
+    private String name;
 }
