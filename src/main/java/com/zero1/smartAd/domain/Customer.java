@@ -18,12 +18,18 @@ public class Customer {
     private String document;
     private String email;
     private String phoneNumber;
-    private Set<User> users = new HashSet<>();
     private Set<Wallet> wallets = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     public Set<Wallet> getExpiredWallets() {
         return this.getWallets().stream()
                 .filter(not(Wallet::isUpToDate))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Wallet> getWalletsUpToDate() {
+        return this.getWallets().stream()
+                .filter(Wallet::isUpToDate)
                 .collect(Collectors.toSet());
     }
 }

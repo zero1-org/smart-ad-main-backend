@@ -19,9 +19,10 @@ public class Wallet {
     private Customer customer;
     private Subscription subscription;
     private Set<Ad> ads = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     public boolean hasSufficientFunds() {
-        return funds > subscription.getValue();
+        return funds > subscription.getDefaultValue();
     }
 
     public boolean isUpToDate() {
