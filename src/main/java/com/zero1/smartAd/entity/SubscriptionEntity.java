@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -12,22 +13,22 @@ import java.util.UUID;
 @Entity
 @Data
 public class SubscriptionEntity {
-
-    @Id
-    private UUID id = UUID.randomUUID();
-    private String name;
-    private String status;
-    private ZonedDateTime creationDate = ZonedDateTime.now();
-    private ZonedDateTime lastPaymentDate = creationDate;
-    private ZonedDateTime expirationDate = creationDate.plusDays(30);
-    private boolean operating = true;
     @ManyToOne
     private SubscriptionTypeEntity subscriptionType;
     @OneToOne
     private CustomerEntity customer;
 
+    @Id
+    private UUID id = UUID.randomUUID();
+    private String name;
+    private ZonedDateTime creationDate = ZonedDateTime.now();
+    private ZonedDateTime lastPaymentDate = creationDate;
+    private ZonedDateTime expirationDate = creationDate.plusDays(30);
+    private String status = SubscriptionStatusEnum.OK.toString();
     @OneToMany
-    private Set<BillingEntity> billings = new HashSet<>();
+    private Set<BillingEntity> billings = new HashSet<>(
+            Collections.singletonList(new BillingEntity())
+    );
 
     @OneToMany
     private Set<UserEntity> users = new HashSet<>();
@@ -37,35 +38,6 @@ public class SubscriptionEntity {
     public boolean isUptoDate(ZonedDateTime processingDate) {
         return processingDate.isBefore(this.getExpirationDate());
     }
-
-    public void process() {
-        var today = ZonedDateTime.now();
-    }
-
-    public void processPayment(ZonedDateTime paymentDate) {
-        // Log -> subscriptionId, customerCNPJ, currentDate, nextExpirationDate
-        ZonedDateTime nextExpirationDate = this.getExpirationDate().plusDays(30);
-        this.setStatus(SubscriptionStatusEnum.OK.toString());
-        this.setOperating(true);
-        this.setLastPaymentDate(paymentDate);
-        this.setExpirationDate(nextExpirationDate);
-    }
-
-    public void updateSubscriptionStatus(SubscriptionStatusEnum freshStatus, ZonedDateTime updateDate) {
-        switch (freshStatus) {
-            case OK:
-                break;
-            case WARN:
-                this.warnSubscription(updateDate);
-                break;
-            case FREEZED:
-                this.freezeSubscription(updateDate);
-                break;
-            default:
-                this.cancelSubscription(updateDate);
-        }
-    }
-
 
     public SubscriptionStatusEnum getFreshStatus(ZonedDateTime processingDate) {
         if (this.isUptoDate(processingDate)) {
@@ -90,12 +62,10 @@ public class SubscriptionEntity {
     public void freezeSubscription(ZonedDateTime freezingDate) {
         // Log -> subscriptionId, customerCNPJ, currentDate
         this.setStatus(SubscriptionStatusEnum.FREEZED.toString());
-        this.setOperating(false);
     }
 
     public void cancelSubscription(ZonedDateTime today) {
         // Log -> subscriptionId, customerCNPJ, currentDate
         this.setStatus(SubscriptionStatusEnum.CANCELLED.toString());
-        this.setOperating(false);
     }
 }

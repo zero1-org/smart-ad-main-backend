@@ -14,7 +14,8 @@ public class BillingEntity {
     @Id
     private UUID id = UUID.randomUUID();
     private ZonedDateTime creationDate = ZonedDateTime.now();
-    private String status = BillingStatusEnum.OPEN.toString();
+    private String status = BillingStatusEnum.WAITING.toString();
+    private ZonedDateTime paidAt;
     @Column(unique = true)
     private String code; // Comes from Billing service
     private ZonedDateTime expirationDate; // Comes from Billing service
@@ -25,36 +26,49 @@ public class BillingEntity {
     @ManyToOne
     private SubscriptionEntity subscriptionEntity;
 
-    public String getStatus() {
-        if (this.payment.getCode() != null) {
-            return BillingStatusEnum.PAID.toString();
-        }
 
-        var today = ZonedDateTime.now();
+    public boolean wasSuccessfullyOpened() {
+        return this.getCode() != null;
+    }
 
-        if (today.isBefore(this.expirationDate)) {
-            return BillingStatusEnum.OPEN.toString();
+    public boolean hasValidPayment() {
+        return this.getPayment().getCode() != null
+                && this.getPayment().getValue() == this.getValue();
+    }
+
+    public boolean hasValidStatus(BillingStatusEnum target) {
+        final boolean billIsOpen = this.wasSuccessfullyOpened();
+        final boolean billIsPaid = this.hasValidPayment();
+        final boolean billIsExpired = ZonedDateTime.now().isAfter(this.getExpirationDate());
+
+        if (billIsOpen) {
+            switch (target) {
+                case PAID:
+                    return billIsPaid;
+                case OPEN:
+                    return !billIsPaid && !billIsExpired;
+                case EXPIRED:
+                    return !billIsPaid && billIsExpired;
+                default:
+                    return false;
+            }
         } else {
-            return BillingStatusEnum.EXPIRED.toString();
+            BillingStatusEnum expectedStatus = BillingStatusEnum.WAITING;
+            return target.equals(expectedStatus);
         }
     }
 
-    public void setStatus(BillingStatusEnum statusEnum) {
-        this.status = statusEnum.toString();
+    public void setStatus(BillingStatusEnum statusEnum) throws Exception {
+        if (this.hasValidStatus(statusEnum))
+            this.status = statusEnum.toString();
+        else throw new Exception();
     }
 
     public void setPayment(PaymentEntity payment) throws Exception {
-        if (payment.getCode() != null) {
-            float paidValue = payment.getValue();
-            float expectedValue = this.getValue();
-
-            if (paidValue == expectedValue) {
-                this.payment = payment;
-                this.setStatus(BillingStatusEnum.PAID);
-                return;
-            }
-        }
-
-        throw new Exception();
+        if (this.hasValidPayment()) {
+            this.payment = payment;
+            this.setStatus(BillingStatusEnum.PAID);
+            this.setPaidAt(ZonedDateTime.now());
+        } else throw new Exception();
     }
 }

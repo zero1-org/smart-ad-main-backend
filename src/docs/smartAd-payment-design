@@ -1,0 +1,41 @@
+# SmartAd Payment Design
+
+## @Context
+A) Webhook from Payment service arrives to `PaymentService.java`   
+
+##  PaymentService.java
+Methods to be called:
+
+1)`saveIncomingPayment(Payment payment)`
+```
+public PaymentEntity saveIncomingPayment(Payment payment) {
+    Optional<Billing> billing = this.billingService.findByCode(payment.getBilling().getCode());
+    billing.ifPresentOrElse(
+        bill -> {
+            this.repo.save(new PaymentEntity(billing)); // Converter, properties etc...
+        }, () -> {
+            throw new Exception();
+    });
+}
+```
+
+2)`processIncomingPayment(PaymentEntity payment)`
+```
+public void processIncomingPayment(PaymentEntity payment) {
+    String billingCode = payment.getBilling().getCode();
+    Optional<Set<Payment>> paymentsForThisBilling = this.findByBilling(billingCode);
+
+    paymentsForThisBilling.ifPresentOrElse(
+        payments -> {
+            payments.size() > 1 ? this.handlePaymentConflicts(payments) 
+            : this.pay(payments.get(0));
+        }, () -> {
+            throw new Exception();
+    });
+}
+```
+
+Start method for the contextB:
+ 
+B) `processNewPayments()` 
+
