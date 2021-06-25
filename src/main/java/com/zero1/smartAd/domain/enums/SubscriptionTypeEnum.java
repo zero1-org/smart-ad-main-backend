@@ -10,10 +10,10 @@ public enum SubscriptionTypeEnum {
     @Getter
     private final String name;
     @Getter
-    private final float value;
+private final float defaultValue;
 
-    SubscriptionTypeEnum(String name, float value) {
+    SubscriptionTypeEnum(String name, float defaultValue) {
         this.name = name;
-        this.value = value;
+        this.defaultValue = defaultValue;
     }
 }

@@ -15,6 +15,6 @@ public class Subscription {
     private SubscriptionTypeEnum subscriptionType;
 
     public float getDefaultValue() {
-        return this.subscriptionType.getValue();
+        return this.subscriptionType.getDefaultValue();
     }
 }
