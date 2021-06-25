@@ -21,4 +21,6 @@ public class UserEntity {
     private CustomerEntity customer;
     @ManyToMany
     private Set<WalletEntity> wallets;
+    @ManyToMany
+    private Set<PermissionEntity> permissions;
 }

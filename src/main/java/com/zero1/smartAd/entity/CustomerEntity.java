@@ -20,7 +20,7 @@ public class CustomerEntity {
     private String email;
     private String phoneNumber;
     @OneToMany
-    private Set<WalletEntity> wallets = new HashSet<>();
+    private Set<SubscriptionEntity> subscriptions = new HashSet<>();
     @OneToMany
     private Set<UserEntity> users = new HashSet<>();
 }
