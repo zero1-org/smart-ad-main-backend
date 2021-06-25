@@ -4,19 +4,17 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import java.util.UUID;
 
 @Entity
 @Data
-public class CustomerEntity {
+public class AdEntity {
 
     @Id
     private UUID id;
     private String name;
-    private String document;
-    private String email;
-    private String phoneNumber;
-    @OneToOne
+    private float value;
+    @ManyToOne
     private SubscriptionEntity subscription;
 }
